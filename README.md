@@ -1,2 +1,1 @@
-# jlox
-Lox
+# Lox
