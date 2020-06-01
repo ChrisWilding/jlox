@@ -5,6 +5,8 @@ import lombok.Value;
 import java.util.List;
 
 abstract class Expr {
+  abstract <R> R accecpt(Visitor<R> visitor);
+
   interface Visitor<R> {
     R visitAssignExpr(Assign expr);
 
@@ -30,8 +32,6 @@ abstract class Expr {
 
     R visitVariableExpr(Variable expr);
   }
-
-  abstract <R> R accecpt(Visitor<R> visitor);
 
   @Value
   static class Assign extends Expr {

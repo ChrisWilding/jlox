@@ -5,12 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 class Scanner {
-  private final String source;
-  private final List<Token> tokens = new ArrayList<>();
-  private int start = 0;
-  private int current = 0;
-  private int line = 1;
-
   private static final Map<String, TokenType> keywords = Map.ofEntries(
     Map.entry("and", TokenType.AND),
     Map.entry("class", TokenType.CLASS),
@@ -29,6 +23,12 @@ class Scanner {
     Map.entry("var", TokenType.VAR),
     Map.entry("while", TokenType.WHILE)
   );
+
+  private final String source;
+  private final List<Token> tokens = new ArrayList<>();
+  private int start = 0;
+  private int current = 0;
+  private int line = 1;
 
   Scanner(String source) {
     this.source = source;

@@ -52,7 +52,7 @@ public class Lox {
     var input = new InputStreamReader(System.in);
     var reader = new BufferedReader(input);
 
-    for (;;) {
+    for (; ; ) {
       System.out.println("> ");
       run(reader.readLine());
       hadError = false;
