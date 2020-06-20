@@ -5,7 +5,7 @@ import lombok.Value;
 import java.util.List;
 
 abstract class Expr {
-  abstract <R> R accecpt(Visitor<R> visitor);
+  abstract <R> R accept(Visitor<R> visitor);
 
   interface Visitor<R> {
     R visitAssignExpr(Assign expr);
@@ -39,7 +39,7 @@ abstract class Expr {
     Expr value;
 
     @Override
-    <R> R accecpt(Visitor<R> visitor) {
+    <R> R accept(Visitor<R> visitor) {
       return visitor.visitAssignExpr(this);
     }
   }
@@ -51,7 +51,7 @@ abstract class Expr {
     Expr right;
 
     @Override
-    <R> R accecpt(Visitor<R> visitor) {
+    <R> R accept(Visitor<R> visitor) {
       return visitor.visitBinaryExpr(this);
     }
   }
@@ -63,7 +63,7 @@ abstract class Expr {
     List<Expr> arguments;
 
     @Override
-    <R> R accecpt(Visitor<R> visitor) {
+    <R> R accept(Visitor<R> visitor) {
       return visitor.visitCallExpr(this);
     }
   }
@@ -74,7 +74,7 @@ abstract class Expr {
     Token name;
 
     @Override
-    <R> R accecpt(Visitor<R> visitor) {
+    <R> R accept(Visitor<R> visitor) {
       return visitor.visitGetExpr(this);
     }
   }
@@ -84,7 +84,7 @@ abstract class Expr {
     Expr expression;
 
     @Override
-    <R> R accecpt(Visitor<R> visitor) {
+    <R> R accept(Visitor<R> visitor) {
       return visitor.visitGroupingExpr(this);
     }
   }
@@ -94,7 +94,7 @@ abstract class Expr {
     Object value;
 
     @Override
-    <R> R accecpt(Visitor<R> visitor) {
+    <R> R accept(Visitor<R> visitor) {
       return visitor.visitLiteralExpr(this);
     }
   }
@@ -106,7 +106,7 @@ abstract class Expr {
     Expr right;
 
     @Override
-    <R> R accecpt(Visitor<R> visitor) {
+    <R> R accept(Visitor<R> visitor) {
       return visitor.visitLogicalExpr(this);
     }
   }
@@ -118,7 +118,7 @@ abstract class Expr {
     Expr value;
 
     @Override
-    <R> R accecpt(Visitor<R> visitor) {
+    <R> R accept(Visitor<R> visitor) {
       return visitor.visitSetExpr(this);
     }
   }
@@ -129,7 +129,7 @@ abstract class Expr {
     Token method;
 
     @Override
-    <R> R accecpt(Visitor<R> visitor) {
+    <R> R accept(Visitor<R> visitor) {
       return visitor.visitSuperExpr(this);
     }
   }
@@ -139,7 +139,7 @@ abstract class Expr {
     Token keyword;
 
     @Override
-    <R> R accecpt(Visitor<R> visitor) {
+    <R> R accept(Visitor<R> visitor) {
       return visitor.visitThisExpr(this);
     }
   }
@@ -150,7 +150,7 @@ abstract class Expr {
     Expr right;
 
     @Override
-    <R> R accecpt(Visitor<R> visitor) {
+    <R> R accept(Visitor<R> visitor) {
       return visitor.visitUnaryExpr(this);
     }
   }
@@ -160,7 +160,7 @@ abstract class Expr {
     Token name;
 
     @Override
-    <R> R accecpt(Visitor<R> visitor) {
+    <R> R accept(Visitor<R> visitor) {
       return visitor.visitVariableExpr(this);
     }
   }

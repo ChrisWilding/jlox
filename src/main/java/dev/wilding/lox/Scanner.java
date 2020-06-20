@@ -5,24 +5,24 @@ import java.util.List;
 import java.util.Map;
 
 class Scanner {
-  private static final Map<String, TokenType> keywords = Map.ofEntries(
-    Map.entry("and", TokenType.AND),
-    Map.entry("class", TokenType.CLASS),
-    Map.entry("else", TokenType.ELSE),
-    Map.entry("false", TokenType.FALSE),
-    Map.entry("for", TokenType.FOR),
-    Map.entry("fun", TokenType.FUN),
-    Map.entry("if", TokenType.IF),
-    Map.entry("nil", TokenType.NIL),
-    Map.entry("or", TokenType.OR),
-    Map.entry("print", TokenType.PRINT),
-    Map.entry("return", TokenType.RETURN),
-    Map.entry("super", TokenType.SUPER),
-    Map.entry("this", TokenType.THIS),
-    Map.entry("true", TokenType.TRUE),
-    Map.entry("var", TokenType.VAR),
-    Map.entry("while", TokenType.WHILE)
-  );
+  private static final Map<String, TokenType> keywords =
+      Map.ofEntries(
+          Map.entry("and", TokenType.AND),
+          Map.entry("class", TokenType.CLASS),
+          Map.entry("else", TokenType.ELSE),
+          Map.entry("false", TokenType.FALSE),
+          Map.entry("for", TokenType.FOR),
+          Map.entry("fun", TokenType.FUN),
+          Map.entry("if", TokenType.IF),
+          Map.entry("nil", TokenType.NIL),
+          Map.entry("or", TokenType.OR),
+          Map.entry("print", TokenType.PRINT),
+          Map.entry("return", TokenType.RETURN),
+          Map.entry("super", TokenType.SUPER),
+          Map.entry("this", TokenType.THIS),
+          Map.entry("true", TokenType.TRUE),
+          Map.entry("var", TokenType.VAR),
+          Map.entry("while", TokenType.WHILE));
 
   private final String source;
   private final List<Token> tokens = new ArrayList<>();

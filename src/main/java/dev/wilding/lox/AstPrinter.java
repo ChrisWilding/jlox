@@ -2,7 +2,7 @@ package dev.wilding.lox;
 
 class AstPrinter implements Expr.Visitor<String> {
   String print(Expr expr) {
-    return expr.accecpt(this);
+    return expr.accept(this);
   }
 
   @Override
@@ -72,7 +72,7 @@ class AstPrinter implements Expr.Visitor<String> {
     builder.append("(").append(name);
     for (Expr expr : exprs) {
       builder.append(" ");
-      builder.append(expr.accecpt(this));
+      builder.append(expr.accept(this));
     }
     builder.append(")");
 

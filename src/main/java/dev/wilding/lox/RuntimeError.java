@@ -3,8 +3,7 @@ package dev.wilding.lox;
 import lombok.Getter;
 
 class RuntimeError extends RuntimeException {
-  @Getter
-  final Token token;
+  @Getter final Token token;
 
   RuntimeError(Token token, String message) {
     super(message);

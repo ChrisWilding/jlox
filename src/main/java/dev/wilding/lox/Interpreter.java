@@ -1,11 +1,15 @@
 package dev.wilding.lox;
 
-class Interpreter implements Expr.Visitor<Object> {
+import java.util.List;
 
-  void interpret(Expr expression) {
+class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
+  private Environment environment = new Environment();
+
+  void interpret(List<Stmt> statements) {
     try {
-      Object value = evaluate(expression);
-      System.out.println(stringify(value));
+      for (Stmt statement : statements) {
+        execute(statement);
+      }
     } catch (RuntimeError error) {
       Lox.runtimeError(error);
     }
@@ -13,7 +17,9 @@ class Interpreter implements Expr.Visitor<Object> {
 
   @Override
   public Object visitAssignExpr(Expr.Assign expr) {
-    return null;
+    var value = evaluate(expr.getValue());
+    environment.assign(expr.getName(), value);
+    return value;
   }
 
   @Override
@@ -119,6 +125,57 @@ class Interpreter implements Expr.Visitor<Object> {
 
   @Override
   public Object visitVariableExpr(Expr.Variable expr) {
+    return environment.get(expr.getName());
+  }
+
+  @Override
+  public Void visitClassStmt(Stmt.Class stmt) {
+    return null;
+  }
+
+  @Override
+  public Void visitExpressionStmt(Stmt.Expression stmt) {
+    evaluate(stmt.getExpression());
+    return null;
+  }
+
+  @Override
+  public Void visitFunctionStmt(Stmt.Function stmt) {
+    return null;
+  }
+
+  @Override
+  public Void visitIfStmt(Stmt.If stmt) {
+    return null;
+  }
+
+  @Override
+  public Void visitPrintStmt(Stmt.Print stmt) {
+    var value = evaluate(stmt.getExpression());
+    System.out.println(stringify(value));
+    return null;
+  }
+
+  @Override
+  public Void visitReturnStmt(Stmt.Return stmt) {
+    return null;
+  }
+
+  @Override
+  public Void visitVarStmt(Stmt.Var stmt) {
+    Object value = null;
+
+    var initializer = stmt.getInitializer();
+    if (initializer != null) {
+      value = evaluate(initializer);
+    }
+
+    environment.define(stmt.getName().getLexeme(), value);
+    return null;
+  }
+
+  @Override
+  public Void visitWhileStmt(Stmt.While stmt) {
     return null;
   }
 
@@ -134,7 +191,24 @@ class Interpreter implements Expr.Visitor<Object> {
   }
 
   private Object evaluate(Expr expr) {
-    return expr.accecpt(this);
+    return expr.accept(this);
+  }
+
+  private void execute(Stmt stmt) {
+    stmt.accept(this);
+  }
+
+  private void executeBlock(List<Stmt> statements, Environment environment) {
+    var previous = this.environment;
+    try {
+      this.environment = environment;
+
+      for (var statement : statements) {
+        execute(statement);
+      }
+    } finally {
+      this.environment = previous;
+    }
   }
 
   private boolean isEqual(Object a, Object b) {
@@ -162,5 +236,11 @@ class Interpreter implements Expr.Visitor<Object> {
     }
 
     return object.toString();
+  }
+
+  @Override
+  public Void visitBlockStmt(Stmt.Block stmt) {
+    executeBlock(stmt.getStatements(), new Environment(environment));
+    return null;
   }
 }
