@@ -90,7 +90,14 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
   @Override
   public Object visitLogicalExpr(Expr.Logical expr) {
-    return null;
+    var left = evaluate(expr.getLeft());
+
+    if (expr.getOperator().getType() == TokenType.OR) {
+      if (isTruthy(left)) return left;
+    } else {
+      if (!isTruthy(left)) return left;
+    }
+    return evaluate(expr.getRight());
   }
 
   @Override
@@ -146,6 +153,11 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
   @Override
   public Void visitIfStmt(Stmt.If stmt) {
+    if (isTruthy(evaluate(stmt.getCondition()))) {
+      execute(stmt.getThenBranch());
+    } else if (stmt.getElseBranch() != null) {
+      execute(stmt.getElseBranch());
+    }
     return null;
   }
 
@@ -176,6 +188,9 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
   @Override
   public Void visitWhileStmt(Stmt.While stmt) {
+    while (isTruthy(evaluate(stmt.getCondition()))) {
+      execute(stmt.getBody());
+    }
     return null;
   }
 
