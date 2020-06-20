@@ -1,10 +1,13 @@
 package dev.wilding.lox;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   private final Environment globals = new Environment();
+  private final Map<Expr, Integer> locals = new HashMap<>();
   private Environment environment = globals;
 
   Interpreter() {
@@ -51,10 +54,21 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
   }
 
+  void resolve(Expr expr, int depth) {
+    locals.put(expr, depth);
+  }
+
   @Override
   public Object visitAssignExpr(Expr.Assign expr) {
     var value = evaluate(expr.getValue());
-    environment.assign(expr.getName(), value);
+
+    var distance = locals.get(expr);
+    if (distance != null) {
+      environment.assignAt(distance, expr.getName(), value);
+    } else {
+      globals.assign(expr.getName(), value);
+    }
+
     return value;
   }
 
@@ -184,7 +198,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
   @Override
   public Object visitVariableExpr(Expr.Variable expr) {
-    return environment.get(expr.getName());
+    return lookUpVariable(expr.getName(), expr);
   }
 
   @Override
@@ -283,6 +297,15 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     if (object == null) return false;
     if (object instanceof Boolean) return (boolean) object;
     return true;
+  }
+
+  private Object lookUpVariable(Token name, Expr expr) {
+    var distance = locals.get(expr);
+    if (distance != null) {
+      return environment.getAt(distance, name.getLexeme());
+    } else {
+      return globals.get(name);
+    }
   }
 
   private String stringify(Object object) {
