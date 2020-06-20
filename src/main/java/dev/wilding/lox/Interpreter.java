@@ -1,9 +1,45 @@
 package dev.wilding.lox;
 
+import java.util.ArrayList;
 import java.util.List;
 
 class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
-  private Environment environment = new Environment();
+  private final Environment globals = new Environment();
+  private Environment environment = globals;
+
+  Interpreter() {
+    globals.define(
+        "clock",
+        new LoxCallable() {
+          @Override
+          public int arity() {
+            return 0;
+          }
+
+          @Override
+          public Object call(Interpreter interpreter, List<Object> arguments) {
+            return (double) System.currentTimeMillis() / 1000.0;
+          }
+
+          @Override
+          public String toString() {
+            return "<native fn>";
+          }
+        });
+  }
+
+  void executeBlock(List<Stmt> statements, Environment environment) {
+    var previous = this.environment;
+    try {
+      this.environment = environment;
+
+      for (var statement : statements) {
+        execute(statement);
+      }
+    } finally {
+      this.environment = previous;
+    }
+  }
 
   void interpret(List<Stmt> statements) {
     try {
@@ -70,7 +106,23 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
   @Override
   public Object visitCallExpr(Expr.Call expr) {
-    return null;
+    var callee = evaluate(expr.getCallee());
+
+    var arguments = new ArrayList<Object>();
+    for (var argument : expr.getArguments()) {
+      arguments.add(evaluate(argument));
+    }
+
+    if (!(callee instanceof LoxCallable)) {
+      throw new RuntimeError(expr.getParen(), "Can only call functions and classes.");
+    }
+
+    LoxCallable function = (LoxCallable) callee;
+    if (arguments.size() != function.arity()) {
+      var message = String.format("Expected %s arguments but got %s.");
+      throw new RuntimeError(expr.getParen(), message);
+    }
+    return function.call(this, arguments);
   }
 
   @Override
@@ -148,6 +200,8 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
   @Override
   public Void visitFunctionStmt(Stmt.Function stmt) {
+    var function = new LoxFunction(stmt, environment);
+    environment.define(stmt.getName().getLexeme(), function);
     return null;
   }
 
@@ -170,7 +224,12 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
   @Override
   public Void visitReturnStmt(Stmt.Return stmt) {
-    return null;
+    Object value = null;
+    if (stmt.getValue() != null) {
+      value = evaluate(stmt.getValue());
+    }
+
+    throw new Return(value);
   }
 
   @Override
@@ -211,19 +270,6 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
   private void execute(Stmt stmt) {
     stmt.accept(this);
-  }
-
-  private void executeBlock(List<Stmt> statements, Environment environment) {
-    var previous = this.environment;
-    try {
-      this.environment = environment;
-
-      for (var statement : statements) {
-        execute(statement);
-      }
-    } finally {
-      this.environment = previous;
-    }
   }
 
   private boolean isEqual(Object a, Object b) {

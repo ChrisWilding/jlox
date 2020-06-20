@@ -1,19 +1,16 @@
 package dev.wilding.lox;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 import java.util.HashMap;
 import java.util.Map;
 
+@AllArgsConstructor
+@NoArgsConstructor(force = true)
 class Environment {
   private final Environment enclosing;
   private final Map<String, Object> values = new HashMap<>();
-
-  Environment() {
-    enclosing = null;
-  }
-
-  Environment(Environment enclosing) {
-    this.enclosing = enclosing;
-  }
 
   void assign(Token name, Object value) {
     var lexme = name.getLexeme();
